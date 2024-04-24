@@ -1,9 +1,14 @@
 export declare interface INugetPackage {
   id: string;
   name: string;
-  icon?: string;
-  description: string;
-  tags: string[];
+  path: string;
   versions: string[];
-  authors: string;
+  icon?: string;
+  description?: string;
+  tags?: string;
+  authors?: string;
+  owners?: string;
+  projectUrl?: string;
+  repositoryUrl?: string;
+  licenseUrl?: string;
 }
