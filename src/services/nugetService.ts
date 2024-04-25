@@ -1,3 +1,4 @@
+import { XMLParser } from "fast-xml-parser";
 import { INugetPackage } from "./interfaces";
 import fs from "fs";
 
@@ -90,18 +91,26 @@ export default {
         .forEach((packageVersion) => {
           const nuspecPath = `${packagesPath}/${packageId}/${packageVersion}/${packageId}.nuspec`;
           if (!fs.existsSync(nuspecPath)) return;
-          const nuspec = fs.readFileSync(nuspecPath, "utf8");
+          const xml = fs.readFileSync(nuspecPath, "utf8");
+          const parser = new XMLParser({
+            ignoreDeclaration: true,
+            ignoreAttributes: false,
+            attributeNamePrefix: "__",
+          });
+          const nuspec = parser.parse(xml);
+          const metadata = nuspec.package.metadata;
           pkg.versions.push(packageVersion);
-          pkg.name = getNuspecField(nuspec, "id") || packageId;
-          pkg.description = getNuspecField(nuspec, "description");
-          pkg.tags = getNuspecField(nuspec, "tags");
-          pkg.authors = getNuspecField(nuspec, "authors");
-          pkg.owners = getNuspecField(nuspec, "owners");
+          pkg.name = metadata.id || packageId;
+          pkg.description = metadata.description;
+          pkg.tags = metadata.tags;
+          pkg.authors = metadata.authors;
+          pkg.owners = metadata.owners;
           if (pkg.owners === pkg.authors) delete pkg.owners;
-          pkg.projectUrl = getNuspecField(nuspec, "projectUrl");
-          pkg.licenseUrl = getNuspecField(nuspec, "licenseUrl");
-          pkg.repositoryUrl = getNuspecAttr(nuspec, "repository", "url");
-          const iconUrl = getNuspecField(nuspec, "iconUrl") ?? getNuspecField(nuspec, "icon");
+          pkg.projectUrl = metadata.projectUrl;
+          pkg.licenseUrl = metadata.licenseUrl;
+          if (metadata.id == "DiscUtils") console.log(metadata.dependencies);
+          pkg.repositoryUrl = metadata.repository?.__url;
+          const iconUrl = metadata.iconUrl ?? metadata.icon;
           let iconPath = `${packagesPath}/${packageId}/${packageVersion}/icon.png`;
           if (!pkg.icon) {
             if (fs.existsSync(iconPath)) pkg.icon = iconPath;
