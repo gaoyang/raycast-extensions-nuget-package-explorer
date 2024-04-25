@@ -4,16 +4,6 @@ import fs from "fs";
 
 const packagesPath = `${process.env.HOME}/.nuget/packages`;
 
-function getNuspecField(nuspec: string, field: string): string | undefined {
-  const match = nuspec.match(new RegExp(`<${field}>(.*)</${field}>`));
-  return match ? match[1] : undefined;
-}
-
-function getNuspecAttr(nuspec: string, field: string, attr: string): string | undefined {
-  const match = nuspec.match(new RegExp(`<${field} .* ${attr}="([^"]*)"`));
-  return match ? match[1] : undefined;
-}
-
 function parseNuGetVersion(version: string): {
   major: number;
   minor: number;
