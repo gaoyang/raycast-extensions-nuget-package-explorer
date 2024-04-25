@@ -1,4 +1,4 @@
-import { Action, ActionPanel, List, open } from "@raycast/api";
+import { Action, ActionPanel, List, open, showInFinder } from "@raycast/api";
 import { useEffect, useState } from "react";
 import nugetService from "./services/nugetService";
 import { INugetPackage } from "./services/interfaces";
@@ -27,7 +27,7 @@ export default function Command() {
             }}
             actions={
               <ActionPanel>
-                <Action title="Open Folder" onAction={() => open(item.path)} />
+                <Action title="Open in Finder" onAction={() => showInFinder(`${item.path}/${item.versions[0]}`)} />
               </ActionPanel>
             }
             detail={
